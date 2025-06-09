@@ -6,3 +6,5 @@ pymysql
 openai
 cryptography
 PyPDF2
+requests
+json
