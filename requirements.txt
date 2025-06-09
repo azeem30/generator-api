@@ -5,3 +5,4 @@ dbutils
 pymysql
 openai
 cryptography
+PyPDF2
