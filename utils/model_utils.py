@@ -11,12 +11,28 @@ class MistralClient:
             "Content-Type": "application/json"
         }
 
-    def generate_qa(self, context, qa_count, options=None):
+    def generate_qa(self, context, qa_pairs_array):
         """Generate descriptive questions and answers on the context according to the specified options"""
         # Preparation of prompt
-        prompt = f"Generate {qa_count} large descriptive questions and answers based on the following context without any formatting: {context}. Only return the Questions and Answers as a response in a JSON parsable string. The string should be an array consisting of JSON objects with keys 'Q' and 'A'. Do not add any heading, title or footing to the response."
-        if options:
-            pass
+        begin_prompt = """
+            Generate large descriptive questions and answers for the following context:\n
+        """
+
+        middle_prompt = f"""
+            The context is {context}.\n
+        """
+
+        pairs_prompt = ""
+        for i, qa_pairs in enumerate(qa_pairs_array):
+            pairs_prompt += f"For File {i + 1}, Generate ${qa_pairs} Q&A pairs.\n"
+
+        end_prompt = f"""
+            Do not generate the title of json.
+            The Generated result should not contain any headers, footers, anything that is not required.
+            The result of the prompt should only be a JSON parsable array where each object contains the keys 'Q' and 'A'.
+        """
+
+        prompt = begin_prompt + middle_prompt + pairs_prompt + end_prompt
 
         payload = {
             "model": self.model_name,
@@ -33,9 +49,11 @@ class MistralClient:
             response.raise_for_status()
             response_data = response.json()["choices"][0]
             response = response_data["message"]["content"]
-            
             # Return the generated response
             if response:
+                if response[3:7] == "json":
+                    last_index = len(response) - 1
+                    response = response[7:last_index - 2]
                 return response
             return { "message": "Failed to generate questions and answers." }
         except Exception as e:

@@ -5,6 +5,9 @@ from utils.db_utils import create_db_pool
 from routes.auth import register_auth_routes
 from routes.model import register_model_routes
 from routes.tests import register_test_routes
+from routes.responses import register_response_routes
+from routes.profile import register_profile_routes
+from routes.analytics import register_analytics_routes
 from utils.model_utils import MistralClient
 from config import MODEL_CONFIG, APP_CONFIG
 import os
@@ -21,6 +24,9 @@ model = MistralClient(MODEL_CONFIG["BASE_URL"], MODEL_CONFIG["API_KEY"], MODEL_C
 register_auth_routes(app, db_pool)
 register_model_routes(app, model, db_pool)
 register_test_routes(app, db_pool)
+register_response_routes(app, db_pool)
+register_profile_routes(app, db_pool)
+register_analytics_routes(app, db_pool)
 
 if __name__ == "__main__":
     port = APP_CONFIG["PORT"]

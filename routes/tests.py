@@ -16,7 +16,7 @@ def register_test_routes(app, db_pool):
             if not data:
                return jsonify( { "error": "No data provided" } ), 400
             test = data["test"]
-            if not all( key in test for key in  ( "title", "subject", "pairs", "marks", "difficulty", "date", "teacher_email" ) ):
+            if not all( key in test for key in  ( "title", "subject", "pairs", "marks", "duration", "difficulty", "date", "teacher_email" ) ):
                return jsonify( { "error": "Missing required fields" } ), 400
             if not data["questions_and_answers"]:
                return jsonify( { "error": "No questions and answers provided" } ), 400
@@ -27,6 +27,7 @@ def register_test_routes(app, db_pool):
             subject = test["subject"]
             marks = test["marks"]
             pairs = test["pairs"]
+            duration = test["duration"]
             difficulty = test["difficulty"]
             scheduled_at = test["date"]
             teacher_email = test["teacher_email"]
@@ -39,8 +40,8 @@ def register_test_routes(app, db_pool):
             # Save the test and the questions and answers in the database
             with get_db_connection(db_pool) as connection:
                 with connection.cursor() as cursor:
-                    query = "insert into tests (id, title, subject, marks, difficulty, scheduled_at, teacher_email, pairs) values (%s, %s, %s, %s, %s, %s, %s, %s)"
-                    data = (id, title, subject, marks, difficulty, scheduled_at, teacher_email, pairs)
+                    query = "insert into tests (id, title, subject, marks, difficulty, scheduled_at, teacher_email, pairs, duration) values (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                    data = (id, title, subject, marks, difficulty, scheduled_at, teacher_email, pairs, duration)
                     cursor.execute(query, data)
                     connection.commit()
             
